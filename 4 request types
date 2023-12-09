@@ -13,7 +13,34 @@ function handleFirstRequest(req, res) {
 function createUser(req, res) {
   const userData = req.body;
 
-  res.status(201).send("User created Successfully");
+  // Validate required fields (username and email, for example)
+  if (!userData || !userData.username || !userData.email) {
+    return res.status(400).send("Username and email are required");
+  }
+
+  // Check if the username is already taken
+  const usernameTaken = users.some(
+    (user) => user.username === userData.username
+  );
+  if (usernameTaken) {
+    return res.status(409).send("Username is already taken");
+  }
+
+  // Generate a new user ID (this is just a simple example, in a real application, you would typically use a database with auto-incrementing IDs)
+  const newUserId = users.length + 1;
+
+  // Create the new user object
+  const newUser = {
+    id: newUserId,
+    username: userData.username,
+    email: userData.email,
+  };
+
+  // Add the new user to the array
+  users.push(newUser);
+
+  // Send a response back to the client
+  res.status(201).json(newUser);
 }
 
 let users = [
